@@ -1,0 +1,66 @@
+1. Задание. Индексы.
+use vk;
+SHOW tables;
+SELECT * FROM users;
+CREATE INDEX users_first_name_last_name_idx ON users(first_name, last_name);
+CREATE UNIQUE INDEX users_email_uq ON users(email);
+CREATE UNIQUE INDEX users_phone_uq ON users(phone);
+SELECT * FROM posts;
+CREATE INDEX posts_head_body_idx ON posts(head(255), body(255)); -- объединяю все содержимое поста в целях упрощения поиска нужной информации одновременно и по заголовку и по тексту.
+SELECT * FROM media;
+CREATE INDEX media_filename_idx ON media(filename);
+SELECT* FROM communities;
+CREATE UNIQUE INDEX communities_name_idx ON communities(name);
+
+
+2. Задание. Оконные функции.
+use vk;
+-- отдельные запросы
+SELECT * FROM communities;
+SELECT *FROM communities_users;
+SELECT * FROM profiles;
+SELECT * FROM 
+users JOIN profiles
+ON users.id = profiles.user_id
+JOIN communities_users
+ON users.id = communities_users.user_id
+JOIN communities 
+ON communities_users.community_id = communities.id;
+
+-- вариант 1
+SELECT DISTINCT communities.name AS "Название группы",
+COUNT(users.id) OVER() / (SELECT COUNT(*) FROM communities) AS "Среднее количество участников в группе",
+FIRST_VALUE(users.first_name) OVER(PARTITION BY communities_users.community_id ORDER BY profiles.birthday DESC) AS "Имя самого молодого пользователя",
+FIRST_VALUE(users.last_name) OVER(PARTITION BY communities_users.community_id ORDER BY profiles.birthday DESC) AS "Фамилия самого молодого пользователя",
+FIRST_VALUE(users.first_name) OVER(PARTITION BY communities_users.community_id ORDER BY profiles.birthday) AS "Имя самого старшего пользователя",
+FIRST_VALUE(users.last_name) OVER(PARTITION BY communities_users.community_id ORDER BY profiles.birthday) AS "Фамилия самого старшего пользователя",
+COUNT(users.id) OVER(PARTITION BY communities_users.community_id) AS "Количество участников группы",
+COUNT(users.id) OVER() AS "Общее количество пользователей",
+COUNT(users.id) OVER(PARTITION BY communities_users.community_id)/COUNT(users.id) OVER() * 100 AS "%%"
+FROM 
+(users JOIN profiles
+ON users.id = profiles.user_id
+JOIN communities_users
+ON users.id = communities_users.user_id
+JOIN communities 
+ON communities_users.community_id = communities.id);
+
+-- Вариант с отдельно вынесенным окном
+
+SELECT DISTINCT communities.name AS "Название группы",
+COUNT(users.id) OVER() / (SELECT COUNT(*) FROM communities) AS "Среднее количество участников в группе",
+FIRST_VALUE(users.first_name) OVER(w_communities_users ORDER BY profiles.birthday DESC) AS "Имя самого молодого пользователя",
+FIRST_VALUE(users.last_name) OVER(w_communities_users ORDER BY profiles.birthday DESC) AS "Фамилия самого молодого пользователя",
+FIRST_VALUE(users.first_name) OVER(w_communities_users ORDER BY profiles.birthday) AS "Имя самого старшего пользователя",
+FIRST_VALUE(users.last_name) OVER(w_communities_users ORDER BY profiles.birthday) AS "Фамилия самого старшего пользователя",
+COUNT(users.id) OVER(w_communities_users) AS "Количество участников группы",
+COUNT(users.id) OVER() AS "Общее количество пользователей",
+COUNT(users.id) OVER(w_communities_users)/COUNT(users.id) OVER() * 100 AS "%%"
+FROM 
+(users JOIN profiles
+ON users.id = profiles.user_id
+JOIN communities_users
+ON users.id = communities_users.user_id
+JOIN communities 
+ON communities_users.community_id = communities.id)
+WINDOW w_communities_users AS (PARTITION BY communities_users.community_id);
