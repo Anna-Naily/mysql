@@ -1,0 +1,145 @@
+-- Таблица пользователей
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки", 
+  first_name VARCHAR(100) NOT NULL COMMENT "Имя пользователя",
+  last_name VARCHAR(100) NOT NULL COMMENT "Фамилия пользователя",
+  email VARCHAR(100) NOT NULL UNIQUE COMMENT "Почта",
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Время создания учетной записи"
+) COMMENT "Пользователи";  
+
+
+-- Таблица профилей
+DROP TABLE IF EXISTS profiles;
+CREATE TABLE profiles (
+  user_id INT UNSIGNED NOT NULL PRIMARY KEY COMMENT "Ссылка на пользователя",
+  avatar_id INT UNIQUE COMMENT "Cсылка на аватар в таблице media",
+  nickname VARCHAR(100) NOT NULL UNIQUE COMMENT "Никнейм",
+  gender ENUM('m','f') NOT NULL COMMENT "Пол",
+  birthday DATE COMMENT "Дата рождения",
+  favorite_film INT UNSIGNED NOT NULL COMMENT "Ссылка на фильм",
+  count_viewed_films INT COMMENT "Количество просмотренных фильмов",
+  count_likes INT COMMENT "Количество оценок фильмов",
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Время изменения профиля"
+) COMMENT "Профили"; 
+
+
+-- Таблица сообщений
+DROP TABLE IF EXISTS messages;
+CREATE TABLE messages (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки", 
+  from_user_id INT UNSIGNED NOT NULL COMMENT "Ссылка на отправителя сообщения",
+  to_user_id INT UNSIGNED NOT NULL COMMENT "Ссылка на получателя сообщения",
+  body TEXT NOT NULL COMMENT "Текст сообщения",
+  created_at DATETIME DEFAULT NOW() COMMENT "Время создания сообщения"
+) COMMENT "Сообщения";
+
+
+-- Таблица дружбы
+DROP TABLE IF EXISTS friendship;
+CREATE TABLE friendship (
+ id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
+  user_id INT UNSIGNED NOT NULL COMMENT "Ссылка на инициатора дружеских отношений",
+  friend_id INT UNSIGNED NOT NULL COMMENT "Ссылка на получателя приглашения дружить",
+  confirmed_at DATETIME COMMENT "Дата подтверждения приглашения"
+) COMMENT "Таблица дружбы";
+
+
+-- Таблица рекомендаций
+DROP TABLE IF EXISTS recommendation;
+CREATE TABLE recommendation (
+  film_id INT UNSIGNED NOT NULL COMMENT "Ссылка на рекомендуемый фильм",
+  user_id INT UNSIGNED NOT NULL COMMENT "Ссылка на получателя рекомендации"
+) COMMENT "Таблица дружбы";
+
+
+
+-- Таблица фильмов
+DROP TABLE IF EXISTS films;
+CREATE TABLE films (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки", 
+  film_name VARCHAR(100) NOT NULL COMMENT "Название фильма",
+  avatar_id INT UNIQUE COMMENT "Cсылка на обложку в таблице media",
+  genre ENUM('horror','family','comedy','drama','melodrama','thriller','cartoon','adventure') NOT NULL COMMENT "Жанр",
+  length_film INT UNSIGNED NOT NULL COMMENT "Длительность фильма",
+  film_country VARCHAR(100) NOT NULL COMMENT "Страна",
+  rating INT UNSIGNED NOT NULL COMMENT "Рейтинг фильма",
+  premiere_at DATETIME COMMENT "Дата премьеры"
+) COMMENT "Пользователи";  
+
+
+-- Таблица рецензий
+DROP TABLE IF EXISTS review;
+CREATE TABLE review (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
+  user_id INT UNSIGNED NOT NULL COMMENT "Ссылка на автора",
+  film_id INT UNSIGNED NOT NULL COMMENT "Ссылка на фильм",
+  head VARCHAR(255) COMMENT "Заголовок рецензии",
+  body TEXT NOT NULL COMMENT "Текст рецензии",
+  is_rating INT UNSIGNED NOT NULL COMMENT "Оценка фильму",
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Дата создания")COMMENT "Рецензии";
+
+ 
+ -- Таблица актеров
+  DROP TABLE IF EXISTS actors;
+  CREATE TABLE actors (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
+  avatar_id INT UNIQUE COMMENT "Cсылка на аватар в таблице media",
+  first_name VARCHAR(100) NOT NULL COMMENT "Имя пользователя",
+  last_name VARCHAR(100) NOT NULL COMMENT "Фамилия пользователя",
+  gender ENUM('m','f') NOT NULL COMMENT "Пол",
+  birthday DATE COMMENT "Дата рождения",
+  country VARCHAR(100) COMMENT "Родная страна",
+  spouse_last_name VARCHAR(100) NOT NULL COMMENT "Фамилия супруга/супруги",
+  count_films INT COMMENT "Количество фильмов") 
+  COMMENT "Актеры"; 
+
+
+-- Таблица Фото пользователей
+ DROP TABLE IF EXISTS media_users;
+CREATE TABLE media_users (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
+  target_id INT UNIQUE  COMMENT "Ссылка на пользователя",
+  filename VARCHAR(255) NOT NULL COMMENT "Название файла",
+  media_type ENUM('jpeg','png') COMMENT "Название типа",
+  size INT NOT NULL COMMENT "Размер файла"
+) COMMENT "Фото пользователей";
+
+-- Таблица Фото актеров
+ DROP TABLE IF EXISTS media_actors;
+CREATE TABLE media_actors (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
+  target_id INT UNIQUE  COMMENT "Ссылка на актера",
+  filename VARCHAR(255) NOT NULL COMMENT "Название файла",
+  media_type ENUM('jpeg','png') COMMENT "Название типа",
+  size INT NOT NULL COMMENT "Размер файла"
+) COMMENT "Фото актеров";
+
+-- Таблица Обложки фильмов
+ DROP TABLE IF EXISTS media_films;
+CREATE TABLE media_films (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
+  target_id INT UNIQUE  COMMENT "Ссылка на фильм",
+  filename VARCHAR(255) NOT NULL COMMENT "Название файла",
+  media_type ENUM('jpeg','png') COMMENT "Название типа",
+  size INT NOT NULL COMMENT "Размер файла"
+) COMMENT "Обложки фильмов";
+
+
+
+-- Таблица лайков
+DROP TABLE IF EXISTS likes;
+CREATE TABLE likes (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_id INT UNSIGNED NOT NULL COMMENT "Отправитель лайка",
+  target_id INT UNSIGNED NOT NULL COMMENT "Фильм-получатель лайка"
+ ) COMMENT "Лайки";
+
+
+-- Таблица актеров и фильмов
+DROP TABLE IF EXISTS actors_in_films;
+CREATE TABLE actors_in_films (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  actors_id INT UNSIGNED NOT NULL COMMENT "Ссылка на актера",
+  films_id INT UNSIGNED NOT NULL COMMENT "Ссылка на фильм"
+ ) COMMENT "Таблица актеров и фильмов"; 

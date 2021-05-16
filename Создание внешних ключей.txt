@@ -1,0 +1,94 @@
+-- Создание внешних ключей
+
+
+-- Добавляем внешние ключи для таблицы profiles
+ALTER TABLE profiles
+  ADD CONSTRAINT profiles_user_id_fk 
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    ON DELETE CASCADE,
+  ADD CONSTRAINT favorite_film_id_fk
+    FOREIGN KEY (favorite_film) REFERENCES films(id)
+     ON DELETE CASCADE;
+
+ 
+--  Добавляем внешние ключи для таблиц media
+
+ ALTER TABLE media_users
+  ADD CONSTRAINT profiles_from_media_users_id_fk 
+    FOREIGN KEY (target_id) REFERENCES profiles(avatar_id)
+    ON DELETE CASCADE;
+   
+   
+ ALTER TABLE media_actors
+  ADD CONSTRAINT actors_from_media_actors_id_fk 
+    FOREIGN KEY (target_id) REFERENCES actors(avatar_id)
+    ON DELETE CASCADE;
+  
+
+ ALTER TABLE media_films
+  ADD CONSTRAINT films_from_media_films_id_fk 
+    FOREIGN KEY (target_id) REFERENCES films(avatar_id)
+    ON DELETE CASCADE;
+
+--  Добавляем внешние ключи для таблицы likes
+ ALTER TABLE likes
+  ADD CONSTRAINT like_from_users_id_fk 
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    ON DELETE CASCADE,
+  ADD CONSTRAINT film_from_like_id_fk 
+    FOREIGN KEY (target_id) REFERENCES films(id)
+    ON DELETE CASCADE;  
+    
+ --  Добавляем внешние ключи для таблицы actors
+ ALTER TABLE actors_in_films 
+  ADD CONSTRAINT actors_from_actors_in_film_id_fk 
+    FOREIGN KEY (actors_id) REFERENCES actors(id)
+    ON DELETE CASCADE,
+  ADD CONSTRAINT film_from_actors_in_film_id_fk 
+    FOREIGN KEY (films_id) REFERENCES films(id)
+    ON DELETE CASCADE;  
+   
+
+--  Добавляем внешние ключи для таблицы recommendation
+ ALTER TABLE recommendation 
+  ADD CONSTRAINT recommendation_users_id_fk 
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    ON DELETE CASCADE,
+  ADD CONSTRAINT film_from_recommendation_id_fk 
+    FOREIGN KEY (film_id) REFERENCES films(id)
+    ON DELETE CASCADE;  
+
+--  Добавляем внешние ключи для таблицы review
+ ALTER TABLE review 
+  ADD CONSTRAINT review_from_users_id_fk 
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    ON DELETE CASCADE,
+  ADD CONSTRAINT film_from_review_id_fk 
+    FOREIGN KEY (film_id) REFERENCES films(id)
+    ON DELETE CASCADE;  
+ 
+--  Добавляем внешние ключи для таблицы messages
+ ALTER TABLE messages 
+  ADD CONSTRAINT messages_from_users_id_fk 
+    FOREIGN KEY (from_user_id) REFERENCES users(id)
+    ON DELETE CASCADE,
+  ADD CONSTRAINT user_from_messenges_id_fk 
+    FOREIGN KEY (to_user_id) REFERENCES users(id)
+    ON DELETE CASCADE;  
+   
+--  Добавляем внешние ключи для таблицы messages
+ ALTER TABLE messages 
+  ADD CONSTRAINT messages_from_users_id_fk 
+    FOREIGN KEY (from_user_id) REFERENCES users(id),
+  ADD CONSTRAINT user_from_messenges_id_fk 
+    FOREIGN KEY (to_user_id) REFERENCES users(id);  
+   
+  --  Добавляем внешние ключи для таблицы friendship
+ ALTER TABLE friendship 
+  ADD CONSTRAINT friendship_from_users_id_fk 
+    FOREIGN KEY (user_id) REFERENCES users(id),
+  ADD CONSTRAINT user_from_friendship_id_fk 
+    FOREIGN KEY (friend_id) REFERENCES users(id);  
+   
+  
+  

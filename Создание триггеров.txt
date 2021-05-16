@@ -1,0 +1,64 @@
+
+-- Создание триггеров на проверку нулевых значений Имени и Фамилии при создании и обновлении таблицы
+-- При создании
+DROP TRIGGER IF EXISTS check_null;
+DELIMITER //
+CREATE TRIGGER check_null BEFORE INSERT ON users
+FOR EACH ROW
+BEGIN
+ IF(ISNULL(NEW.first_name) AND ISNULL(NEW.last_name)) 
+ THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'DELETE canceled';
+	END IF;
+END //
+DELIMITER ;
+
+-- При обновлении
+DROP TRIGGER IF EXISTS update_check_null;
+DELIMITER //
+CREATE TRIGGER update_check_null BEFORE UPDATE ON users
+FOR EACH ROW
+BEGIN
+ IF(ISNULL(NEW.first_name) AND ISNULL(NEW.last_name)) 
+ THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'DELETE canceled';
+	END IF;
+END //
+DELIMITER ;
+
+-- Проверка
+INSERT INTO users (first_name, last_name, email, created_at)
+VALUES ('dwd', 'dwdw', 'dwdiwi@mail.ru', NOW());
+
+INSERT INTO users (first_name, last_name, email, created_at)
+VALUES (NULL, NULL, 'dwdiwi@mail.ru', NOW());
+
+
+-- Создание триггеров. При появлении нового пользователя в базе данных в таблице users,
+ генерируется новая строка в таблице profiles и media_users (для аватара нового пользователя)
+
+-- создание строки в профиле
+DROP TRIGGER IF EXISTS create_profiles_info;
+DELIMITER //
+CREATE TRIGGER create_profiles_info AFTER INSERT ON users 
+FOR EACH ROW
+BEGIN
+ INSERT INTO
+  profiles(user_id, avatar_id, nickname, gender, birthday, favorite_film, count_viewed_films, count_likes, updated_at)
+VALUES
+  ( 101, 101,'name','m','2000-04-05',1,1,1,NOW());
+END//
+
+-- создание строки в media
+DROP TRIGGER IF EXISTS create_avatar_info;
+DELIMITER //
+CREATE TRIGGER create_avatar_info AFTER INSERT ON users 
+FOR EACH ROW
+BEGIN
+ INSERT INTO
+  media_users(target_id, filename, media_type, size)
+VALUES
+  ( 101, 'input_name','png',500);
+END//
+
+
+
+
