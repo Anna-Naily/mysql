@@ -1,0 +1,63 @@
+-- Данные во все таблицы загружены с помощью сайта fill.db
+
+
+-- Обновление данных в таблицах
+
+
+-- Редактирование данных в profiles. Попадались случаи, когда информация в профиле была обновлена еще до создания аккаунта профиля
+UPDATE users JOIN profiles
+ON users.id = profiles.user_id
+SET profiles.updated_at = NOW()
+WHERE users.created_at > profiles.updated_at;
+
+UPDATE users JOIN profiles
+ON users.id = profiles.user_id
+SET users.created_at = NOW()
+WHERE profiles.birthday > users.created_at;
+
+
+-- Редактирование данных в таблице films. Попадались случаи, когда дата премьеры фильма состоялась до рождения актера, снимавшегося в нем.
+UPDATE actors JOIN actors_in_films 
+ON actors.id = actors_in_films.actors_id 
+JOIN films ON actors_in_films.films_id = films.id
+SET films.premiere_at = NOW()
+WHERE actors.birthday > films.premiere_at;
+-- Изменение длины фильма
+UPDATE films SET length_film = FLOOR(60 + RAND() * 180);
+
+
+
+-- Редактирование данных в таблице friendship
+-- Исключение случаев, когда пользователь дружит сам с собой
+UPDATE friendship SET friend_id = FLOOR(1 + RAND() * 100)
+WHERE user_id = friend_id;
+-- Исключение случаев, когда аккаунт созда н позже, чем запрос дружбы
+UPDATE users JOIN friendship
+ON users.id = friendship.user_id
+SET confirmed_at = NOW()
+WHERE users.created_at > friendship.confirmed_at;
+
+
+
+
+-- Редактирование данных в messages
+-- Исключение написанных самому себе сообщений
+UPDATE messages SET to_user_id = FLOOR(1 + RAND() * 100)
+WHERE from_user_id = to_user_id;
+-- Исключение случаев, когда аккаунт созда н позже, чем сообщение
+UPDATE users JOIN messages
+ON users.id = messages.from_user_id
+SET messages.created_at = NOW()
+WHERE users.created_at > messages.created_at;
+
+
+-- Редактирование данных в review
+-- Исключение случаев, когда пользователь был зарегистророван или позже, чем написана рецензия 
+   или когда премьера фильма состоялась позже, чем написана рецензия
+UPDATE users JOIN review 
+ON users.id = review.user_id
+JOIN films ON films.id = film_id
+SET review.created_at = NOW()
+WHERE users.created_at > review.created_at OR 
+films.premiere_at > review.created_at;
+

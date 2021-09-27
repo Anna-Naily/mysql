@@ -1,0 +1,14 @@
+  -- Cоздание представлений
+   
+ -- 1) Создать представление, которое выведет фамилии актеров и названия фильмов, в которых они играют
+   DROP VIEW IF EXISTS film_and_ators;
+   CREATE VIEW film_and_ators AS SELECT actors.last_name, films.film_name AS film
+   FROM(films LEFT JOIN actors_in_films ON films.id = actors_in_films.films_id
+   JOIN actors ON actors.id = actors_in_films.actors_id);
+   SELECT * FROM film_and_ators;
+  
+-- 2) Создать представление, которое выведет название фильма и его обложку
+   DROP VIEW IF EXISTS film_and_picture;
+   CREATE VIEW film_and_picture AS SELECT films.film_name, media_films.filename AS picture_of_film
+   FROM(films LEFT JOIN media_films ON films.id = media_films.target_id);   
+   SELECT * FROM film_and_picture;

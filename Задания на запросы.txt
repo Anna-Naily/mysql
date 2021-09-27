@@ -1,0 +1,26 @@
+  -- Запросы
+  
+  -- 1) Вывод названия фильмов с наивысшим рейтингом
+   SELECT film_name FROM films 
+   WHERE rating = 10;
+  
+  -- 2) Отсортировать фильмы по уменьшению рейтинга 
+    SELECT film_name,rating FROM films 
+    ORDER BY rating DESC;
+       -- так же отсортировать фильмы по увеличению хронометража
+   SELECT film_name,length_film FROM films 
+   ORDER BY length_film;
+  
+  -- 3) Посчитать срдний возраст всех актеров в системе
+   SELECT AVG(TIMESTAMPDIFF(YEAR, birthday, NOW())) AS age FROM actors;
+  
+  -- 4) Посчитать количество лайков фильмам, ПОСТАВЛЕННОЕ десятью самыми молодыми пользователями
+    SELECT COUNT(*) FROM likes
+     WHERE likes.user_id IN (SELECT * FROM (SELECT user_id FROM profiles ORDER BY birthday DESC LIMIT 10) AS sort);
+  
+  -- 5) Вывести с помощью JOIN все фильмы с актрисой Zelda Dibbert.
+    SELECT film_name FROM films LEFT JOIN actors_in_films
+    ON films.id = actors_in_films.films_id
+    JOIN actors ON actors.id = actors_in_films.actors_id 
+    AND actors.first_name = 'Zelda' AND actors.last_name = 'Dibbert';
+    
